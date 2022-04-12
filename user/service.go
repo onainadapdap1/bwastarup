@@ -1,11 +1,15 @@
 package user
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"errors"
+	"golang.org/x/crypto/bcrypt"
+)
 
 //1. mewakili bisnis logic/ fitur yang ada di aplikasi
 //-- mapping struct input ke struct User
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error) //method dgn param = struct RegisterUserInput
+	LoginUser(input LoginInput) (User, error)
 }
 
 //2. deklarasi cetakan service
@@ -44,6 +48,30 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 
 	//9. return newUser, nil
 	return newUser, nil
+}
+
+//--- implementasi method Login()
+func (s *service) LoginUser(input LoginInput) (User, error) {
+	// mendapatkan email dan password user
+	email := input.Email
+	password := input.Password
+
+	// mencari user dengan alamat email input
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return user, err
+	}
+
+	if user.ID == 0 {
+		return user, errors.New("No user found on that email")
+	}
+
+	//matching password
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if err != nil {
+		return user, err
+	}
+	return user, nil
 }
 
 // service = mapping struct input ke struct user

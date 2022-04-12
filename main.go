@@ -26,14 +26,38 @@ func main() {
 	//9. memanggil fungsi RegisterUser
 	userHandler := handler.NewUserHandler(userService)
 
+	//15. memanggil method Login() dari service.go
+	//input := user.LoginInput{
+	//	Email:    "contoh@gmail.com",
+	//	Password: "password",
+	//}
+	//user, err := userService.Login(input)
+	//if err != nil {
+	//	fmt.Println("Terjadi kesalahan")
+	//	fmt.Println(err.Error())
+	//}
+	//fmt.Println(user.Email)
+	//fmt.Println(user.Name)
+	//14. memanggil method FindByEmail dari repository.go
+	//userByEmail, err := userRepository.FindByEmail("pegasus@gmail.com")
+	//if err != nil {
+	//	fmt.Println(err.Error())
+	//}
+	//if userByEmail.ID == 0 {
+	//	fmt.Println("User tidak ditemukan")
+	//} else {
+	//	fmt.Println(userByEmail.Name)
+	//}
+
 	//10. set default router
 	router := gin.Default()
 	//11. set grouping versioning
 	api := router.Group("/api/v1")
 
-	//12. set handler
+	//12. set handler register
 	api.POST("/users", userHandler.RegisterUser)
-
+	//16. set handler login
+	api.POST("/sessions", userHandler.Login)
 	//13. menjalankan server
 	router.Run()
 	//7. set objek cetakan RegisterUserInput

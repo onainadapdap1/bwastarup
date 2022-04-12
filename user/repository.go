@@ -4,7 +4,8 @@ import "gorm.io/gorm"
 
 //1. set interface public -> objek lain mengacu ke repository ini
 type Repository interface {
-	Save(user User) (User, error) //2. return User struct
+	Save(user User) (User, error)           //2. return User struct
+	FindByEmail(email string) (User, error) //6. membuat fungsi yg bisa mencari user yang memiliki alamat email X
 }
 
 //3. deklarasi cetakan repository struct private
@@ -25,5 +26,19 @@ func (r *repository) Save(user User) (User, error) {
 		return user, err
 	}
 	//7. jika tidak ada error
+	return user, nil
+}
+
+//7. set implementasi method FindByEmail()
+func (r *repository) FindByEmail(email string) (User, error) {
+	//set objek cetakan User
+	var user User
+	//-> find email, jika ada yg dikembalikan, simpan ke dalam objek user
+	err := r.db.Where("email = ?", email).Find(&user).Error
+	//-> cek jika ada error
+	if err != nil {
+		return user, err
+	}
+
 	return user, nil
 }
