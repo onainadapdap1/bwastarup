@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bwastarup/auth"
 	"bwastarup/helper"
 	"bwastarup/user"
 	"fmt"
@@ -11,11 +12,12 @@ import (
 //1. deklarasi cetakan userHandler, service menjadi dependency handle
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
 //2. fungsi ini, return objek struct userHandler
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService: userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService: userService, authService: authService}
 }
 
 //3. method handler RegisterUser()
@@ -41,9 +43,15 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
+	//--generate token ketikan register
+	token, err := h.authService.GenerateToken(newUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 	//memanggil formatter dari formatter.go, seteleh mengirim data ke userService
-	formatter := user.FormatUser(newUser, "tokentokentokentoken")
+	formatter := user.FormatUser(newUser, token)
 
 	//-> memanggil fungsi APIResponse() dari helper.go
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
@@ -83,8 +91,16 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
+	//--generate new token ketika berhasil login
+	token, err := h.authService.GenerateToken(loggedInUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Login gagal", http.StatusUnprocessableEntity, "error", nil)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
 	//-- jika berhasil validasi dan mengrim ke service, set response json
-	formatter := user.FormatUser(loggedInUser, "tokentokentokentoken")
+	formatter := user.FormatUser(loggedInUser, token)
 	response := helper.APIResponse("Successfuly loggedin", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 }

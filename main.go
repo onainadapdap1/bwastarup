@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bwastarup/auth"
 	"bwastarup/handler"
 	"bwastarup/user"
 	"github.com/gin-gonic/gin"
@@ -23,8 +24,12 @@ func main() {
 	userRepository := user.NewRepository(db) //userRepository = objek berisi field db
 	//6. memanggil fungsi RegisterUser dari service.go
 	userService := user.NewService(userRepository)
+	//21. memanggil fungsi NewService dari service.go(auth)
+	authService := auth.NewService()
+	//fmt.Println(authService.GenerateToken(1001))
 	//9. memanggil fungsi RegisterUser
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
+
 	//19. memanggil SaveAvatar dari service.go
 	//userService.SaveAvatar(4, "images/1-profile.png")
 
