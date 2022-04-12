@@ -25,6 +25,8 @@ func main() {
 	userService := user.NewService(userRepository)
 	//9. memanggil fungsi RegisterUser
 	userHandler := handler.NewUserHandler(userService)
+	//19. memanggil SaveAvatar dari service.go
+	//userService.SaveAvatar(4, "images/1-profile.png")
 
 	//17. memanggil method IsEmailAvailable() dari service.go
 	//input := user.CheckEmailInput{
@@ -72,6 +74,8 @@ func main() {
 	api.POST("/sessions", userHandler.Login)
 	//18. set handler checkEmailAvailability
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
+	//20. set handler uploadAvatar()
+	api.POST("/avatars", userHandler.UploadAvatar)
 	//13. menjalankan server
 	router.Run()
 	//7. set objek cetakan RegisterUserInput

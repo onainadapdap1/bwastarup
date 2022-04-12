@@ -11,6 +11,7 @@ type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error) //method dgn param = struct RegisterUserInput
 	LoginUser(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
+	SaveAvatar(ID int, fileLocation string) (User, error) //fileLocation = alamat file disimpan
 }
 
 //2. deklarasi cetakan service
@@ -89,6 +90,23 @@ func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 	}
 
 	return false, nil //kasih nilai default
+}
+
+//--implement SaveAvatar(,)
+func (s *service) SaveAvatar(ID int, fileLocation string) (User, error) {
+	//dapatkan user id
+	user, err := s.repository.FindById(ID)
+	if err != nil {
+		return user, err
+	}
+	//update atribute avatar filename -> memberikan nilai baru
+	user.AvatarFileName = fileLocation
+	//simpan perubahan filename ke db
+	updatedUser, err := s.repository.Update(user)
+	if err != nil {
+		return updatedUser, err
+	}
+	return updatedUser, nil
 }
 
 // service = mapping struct input ke struct user

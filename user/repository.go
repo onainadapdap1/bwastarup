@@ -6,6 +6,8 @@ import "gorm.io/gorm"
 type Repository interface {
 	Save(user User) (User, error)           //2. return User struct
 	FindByEmail(email string) (User, error) //6. membuat fungsi yg bisa mencari user yang memiliki alamat email X
+	FindById(ID int) (User, error)          //8. FindById()
+	Update(user User) (User, error)         //10
 }
 
 //3. deklarasi cetakan repository struct private
@@ -40,5 +42,28 @@ func (r *repository) FindByEmail(email string) (User, error) {
 		return user, err
 	}
 
+	return user, nil
+}
+
+//9. set implementasi method FindById()
+func (r *repository) FindById(ID int) (User, error) {
+	//-- set objek penampung cetakan User
+	var user User
+	//-- find ID, jika ada, simpan ke objek user
+	err := r.db.Where("id = ?", ID).Find(&user).Error
+	//--jika ada error, return error
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+//11. implement kontrak Update()
+func (r *repository) Update(user User) (User, error) {
+	//-- update data user di db
+	err := r.db.Save(&user).Error
+	if err != nil {
+		return user, err
+	}
 	return user, nil
 }
