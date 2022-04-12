@@ -26,6 +26,17 @@ func main() {
 	//9. memanggil fungsi RegisterUser
 	userHandler := handler.NewUserHandler(userService)
 
+	//17. memanggil method IsEmailAvailable() dari service.go
+	//input := user.CheckEmailInput{
+	//	Email: "contoh@gmail.com",
+	//}
+	//isTrue, err := userService.IsEmailAvailable(input)
+	//if err != nil {
+	//	fmt.Println("Sudah ada email di db")
+	//	fmt.Println(err.Error())
+	//}
+	//fmt.Println("is True :", isTrue)
+
 	//15. memanggil method Login() dari service.go
 	//input := user.LoginInput{
 	//	Email:    "contoh@gmail.com",
@@ -38,6 +49,7 @@ func main() {
 	//}
 	//fmt.Println(user.Email)
 	//fmt.Println(user.Name)
+
 	//14. memanggil method FindByEmail dari repository.go
 	//userByEmail, err := userRepository.FindByEmail("pegasus@gmail.com")
 	//if err != nil {
@@ -58,6 +70,8 @@ func main() {
 	api.POST("/users", userHandler.RegisterUser)
 	//16. set handler login
 	api.POST("/sessions", userHandler.Login)
+	//18. set handler checkEmailAvailability
+	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
 	//13. menjalankan server
 	router.Run()
 	//7. set objek cetakan RegisterUserInput

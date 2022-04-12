@@ -10,6 +10,7 @@ import (
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error) //method dgn param = struct RegisterUserInput
 	LoginUser(input LoginInput) (User, error)
+	IsEmailAvailable(input CheckEmailInput) (bool, error)
 }
 
 //2. deklarasi cetakan service
@@ -72,6 +73,22 @@ func (s *service) LoginUser(input LoginInput) (User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+//-- set implementasi method isEmailAvailable()
+func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
+	//tangkap input user
+	email := input.Email
+	//kirim ke repository
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return false, err
+	}
+	if user.ID == 0 {
+		return true, nil
+	}
+
+	return false, nil //kasih nilai default
 }
 
 // service = mapping struct input ke struct user
