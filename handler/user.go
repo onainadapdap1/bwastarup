@@ -162,7 +162,9 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 	//harusnya dari jwt
-	userID := 1 //anggap dari jwt
+	//userID := 1 //anggap dari jwt
+	currentUser := c.MustGet("currentUser").(user.User)
+	userID := currentUser.ID
 	// images/namafile.png ->images/ID-namafile.png
 	path := "images/" + file.Filename
 	path = fmt.Sprintf("images/%d-%s", userID, file.Filename)
@@ -180,7 +182,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	_, err = h.userService.SaveAvatar(userID, path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
-		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		response := helper.APIResponse("Failed to upload avatar image broo0", http.StatusBadRequest, "error", data)
 		//set response
 		c.JSON(http.StatusBadRequest, response)
 		return

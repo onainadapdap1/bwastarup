@@ -12,6 +12,7 @@ type Service interface {
 	LoginUser(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
 	SaveAvatar(ID int, fileLocation string) (User, error) //fileLocation = alamat file disimpan
+	GetUserByID(ID int) (User, error)
 }
 
 //2. deklarasi cetakan service
@@ -107,6 +108,20 @@ func (s *service) SaveAvatar(ID int, fileLocation string) (User, error) {
 		return updatedUser, err
 	}
 	return updatedUser, nil
+}
+
+//-- implement GetByID()
+func (s *service) GetUserByID(ID int) (User, error) {
+	//--panggil FIndByID() dari repository
+	user, err := s.repository.FindById(ID)
+	if err != nil {
+		return user, err
+	}
+
+	if user.ID == 0 {
+		return user, errors.New("No user found on with that ID")
+	}
+	return user, nil
 }
 
 // service = mapping struct input ke struct user
