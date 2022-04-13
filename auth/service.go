@@ -1,12 +1,16 @@
 package auth
 
-import "github.com/dgrijalva/jwt-go"
+import (
+	"errors"
+	"github.com/dgrijalva/jwt-go"
+)
 
 //jwt: 1. generate token, 2. melakukan validasi token(toke valid / tidak)
 
 //1. set interface Service
 type Service interface {
 	GenerateToken(userID int) (string, error)
+	ValidateToken(token string) (*jwt.Token, error)
 }
 
 //2. set cetakan jwtService
@@ -34,4 +38,22 @@ func (s *jwtService) GenerateToken(userID int) (string, error) {
 		return signedToken, err
 	}
 	return signedToken, nil
+}
+
+//6. implement ValidateToken()
+func (s *jwtService) ValidateToken(encodedToken string) (*jwt.Token, error) {
+	//parsing token
+	token, err := jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
+		//-- validasi apakah token method matching
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
+			return nil, errors.New("invalite token")
+		}
+		return []byte(SECRET_KEY), nil
+	})
+
+	if err != nil {
+		return token, err
+	}
+	return token, nil
 }

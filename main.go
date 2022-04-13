@@ -4,6 +4,7 @@ import (
 	"bwastarup/auth"
 	"bwastarup/handler"
 	"bwastarup/user"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,6 +28,20 @@ func main() {
 	//21. memanggil fungsi NewService dari service.go(auth)
 	authService := auth.NewService()
 	//fmt.Println(authService.GenerateToken(1001))
+
+	//22. test validateToken
+	token, err := authService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMn0.Ioz44oujtQZRFxJiMz0P8wwY08B2iH3rOhFJ2tVcZMU")
+	if err != nil {
+		fmt.Println("ERROR")
+		fmt.Println("ERROR")
+		fmt.Println("ERROR")
+	}
+	if token.Valid {
+		fmt.Println("valid")
+	} else {
+		fmt.Println("invalid invalid")
+	}
+
 	//9. memanggil fungsi RegisterUser
 	userHandler := handler.NewUserHandler(userService, authService)
 
@@ -101,4 +116,5 @@ func main() {
 
 	//5. menyimpan data user ke database
 	//userRepository.Save(user)
+
 }
